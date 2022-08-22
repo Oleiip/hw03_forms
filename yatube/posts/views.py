@@ -1,7 +1,9 @@
-from itertools import count
 from django.core.paginator import Paginator
-from django.shortcuts import render, get_object_or_404
-from .models import Post, Group, User
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from .forms import PostForm
+from .models import Post, Group
 
 POSTS_PER_PAGE = 10
 
@@ -21,23 +23,23 @@ def index(request):
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    posts = group.groups.all()[:POSTS_PER_PAGE]
+    posts = group.groups.all()
+    paginator = Paginator(posts, POSTS_PER_PAGE)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
         'group': group,
-        'posts': posts,
+        'posts': page_obj,
     }
     return render(request, 'posts/group_list.html', context)
 
 
 def profile(request, username):
     posts = Post.objects.filter(author__username=username).all()
-    user = User.objects.filter(username=username).values()
     paginator = Paginator(posts, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
-        'user': user,
-        'count': posts.count(),
         'page_obj': page_obj,
     }
     return render(request, 'posts/profile.html', context)
@@ -46,14 +48,36 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = Post.objects.filter(pk=post_id)
     context = {
-        'post': post,
+        'page_obj': post,
     }
     return render(request, 'posts/post_detail.html', context)
 
 
+@login_required
 def post_create(request):
-    form = {
-        'text': text,
-        'group': group,
-    }
-    return render(request, 'posts/create_post.html', form)
+    template = 'posts/create_post.html'
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect("posts:profile", post.author)
+    form = PostForm()
+    return render(request, template, {'form': form})
+
+
+@login_required
+def post_edit(request, post_id):
+    template = 'posts/create_post.html'
+    post = get_object_or_404(Post, pk=post_id)
+    if post.author == request.user:
+        if request.method == 'POST':
+            form = PostForm(instance=post)
+            if form.is_valid:
+                form.save()
+                return redirect("posts:profile", request.user)
+        form = PostForm(instance=post)
+        return render(request, template, {'form': form, 'is_edit': True, 'post_id': post_id})
+    else:
+        return redirect('posts:post_detail', post_id)

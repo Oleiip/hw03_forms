@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}Пост {% for post in post %}{{ post.text|truncatewords:30 }} {% endfor %}{% endblock %}
+{% block title %}Пост {% for post in page_obj %}{{ post.text|truncatewords:30 }} {% endfor %}{% endblock %}
 {% block content %}
 
     <div class="row">
-      {% for post in post %}
+      {% for post in page_obj %}
         <aside class="col-12 col-md-3">
 
           <ul class="list-group list-group-flush">
@@ -21,13 +21,20 @@
               Автор: {{ post.author.get_full_name }}
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              Всего постов автора:  <span ></span>
+              Всего постов автора:  <span >{{post.author.posts.count}}</span>
             </li>
             <li class="list-group-item">
-              <a href='{% url 'posts:profile' post.author.username  %}'>
+              <a href="{% url 'posts:profile' post.author.username %}">
                 все посты пользователя
               </a>
             </li>
+            {% if post.author.username == user.username%}
+            <li class="list-group-item">
+              <a href="{% url 'posts:post_edit' post.pk %}">
+                  редактировать запись
+              </a>
+              {% endif %}
+          </li>
           </ul>
         </aside>
         <article class="col-12 col-md-9">
@@ -35,7 +42,7 @@
             {{ post.text }}
           </p>
         </article>
-        {% endfor %}
+    {% endfor %}
     </div>
 
 {% endblock %}
