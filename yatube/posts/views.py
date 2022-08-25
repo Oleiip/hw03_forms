@@ -65,7 +65,7 @@ def post_create(request):
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author=request.user
+            post.author = request.user
             post.save()
             return redirect("posts:profile", post.author)
     form = PostForm()
@@ -83,6 +83,8 @@ def post_edit(request, post_id):
                 form.save()
                 return redirect('posts:post_detail', post_id)
         form = PostForm(instance=post)
-        return render(request, template, {'form': form, 'is_edit': True, 'post_id': post_id})
+        return render(request, template, {'form': form,
+                                          'is_edit': True,
+                                          'post_id': post_id})
     else:
         return redirect('posts:post_detail', post_id)
