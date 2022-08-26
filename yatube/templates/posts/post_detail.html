@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}Пост {% for post in posts %}{{ post.text|truncatewords:30 }} {% endfor %}{% endblock %}
+{% block title %}Пост {{ post.text|truncatewords:30 }}{% endblock %}
 {% block content %}
 
     <div class="row">
-      {% for post in posts %}
+
         <aside class="col-12 col-md-3">
 
           <ul class="list-group list-group-flush">
@@ -28,12 +28,7 @@
                 все посты пользователя
               </a>
             </li>
-            {% if post.author.username == user.username%}
-            <li class="list-group-item">
-              <a href="{% url 'posts:post_edit' post.pk %}">
-                  редактировать запись
-              </a>
-              {% endif %}
+
           </li>
           </ul>
         </aside>
@@ -41,8 +36,13 @@
           <p>
             {{ post.text }}
           </p>
+          {% if post.author.id == user.id %}
+              <a class="btn btn-primary" href="{% url 'posts:post_edit' post.pk %}">
+                  редактировать запись
+              </a>
+              {% endif %}
         </article>
-    {% endfor %}
+
     </div>
 
 {% endblock %}
