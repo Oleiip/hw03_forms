@@ -1,3 +1,4 @@
+from tokenize import group
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -46,10 +47,9 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
-    posts = Post.objects.filter(pk=post_id).select_related('group')
-
+    post = get_object_or_404(Post, pk=post_id)
     context = {
-        'posts': posts,
+        'post': post,
     }
     return render(request, 'posts/post_detail.html', context)
 
