@@ -1,9 +1,8 @@
-from tokenize import group
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import PostForm
-from .models import Post, Group, User
+from posts.forms import PostForm
+from posts.models import Post, Group, User
 
 POSTS_PER_PAGE = 10
 
