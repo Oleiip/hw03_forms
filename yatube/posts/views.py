@@ -8,8 +8,7 @@ POSTS_PER_PAGE = 10
 
 
 def index(request):
-    posts = Post.objects.select_related('author',
-                                        'group')
+    posts = Post.objects.select_related('author', 'group')
     paginator = Paginator(posts, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -35,7 +34,7 @@ def group_posts(request, slug):
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    posts = user.posts.select_related('author')
+    posts = user.posts.select_related('group')
     paginator = Paginator(posts, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -47,9 +46,10 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
-    post = get_object_or_404(Post, pk=post_id)
+    posts = Post.objects.filter(pk=post_id).select_related('group')
+
     context = {
-        'post': post,
+        'posts': posts,
     }
     return render(request, 'posts/post_detail.html', context)
 
@@ -85,8 +85,6 @@ def post_edit(request, post_id):
             'is_edit': True,
             'post_id': post_id
         }
-        return render(request,
-                      'posts/create_post.html',
-                      context)
+        return render(request, 'posts/create_post.html', context)
 
     return redirect('posts:post_detail', post_id)
