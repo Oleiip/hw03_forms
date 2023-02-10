@@ -14,13 +14,13 @@
 Клонируем проект:
 
 ```bash
-git clone https://github.com/themasterid/hw03_forms.git
+git clone https://github.com/oleiip/hw03_forms.git
 ```
 
 или
 
 ```bash
-git clone git@github.com:themasterid/hw03_forms.git
+git clone git@github.com:oleiip/hw03_forms.git
 ```
 
 Переходим в папку с проектом:
@@ -68,24 +68,6 @@ python yatube/manage.py migrate
 ```bash
 python yatube/manage.py createsuperuser
 ```
-
-При желании делаем коллекцию статики:
-
-```bash
-python yatube/manage.py collectstatic
-```
-
-Предварительно сняв комментарий с:
-```bash
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-```
-
-И закомментировав: 
-```bash
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-```
-
-Иначе получим ошибку: You're using the staticfiles app without having set the STATIC_ROOT setting to a filesystem path.
 
 В папку с проектом, где файл settings.py добавляем файл .env куда прописываем наши параметры:
 
